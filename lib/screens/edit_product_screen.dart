@@ -15,8 +15,45 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlFocuseNode = FocusNode();
   final _imageController = TextEditingController();
   final _form = GlobalKey<FormState>();
-  var _editedProduct =
-      Product(id: null, title: '', price: 0, description: '', imageUrl: '');
+  var _editedProduct = Product(
+    id: null,
+    title: '',
+    price: 0,
+    description: '',
+    imageUrl: '',
+  );
+  var _isInit = true;
+  var _initValues = {
+    'title': '',
+    'desctiption': '',
+    'price': '',
+  };
+
+  @override
+  void initState() {
+    _imageUrlFocuseNode.addListener(_updateImageUrl);
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final String _id = ModalRoute.of(context).settings.arguments;
+
+      if (_id != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(_id);
+        _initValues = {
+          'title': _editedProduct.title,
+          'desctiption': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+        };
+        _imageController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
@@ -26,12 +63,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _descriptionFocuseNode.dispose();
     _imageController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    _imageUrlFocuseNode.addListener(_updateImageUrl);
-    super.initState();
   }
 
   void _updateImageUrl() {
@@ -52,9 +83,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (!isValid) {
       return;
     }
-
     _form.currentState.save();
-    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+
+    if (_editedProduct.id != null) {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+
     Navigator.pop(context);
   }
 
@@ -78,7 +115,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
+                initialValue: _initValues['title'],
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                ),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (value) {
                   FocusScope.of(context).requestFocus(_priceFocuseNode);
@@ -90,6 +130,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     imageUrl: _editedProduct.imageUrl,
                     price: _editedProduct.price,
                     description: _editedProduct.description,
+                    isFavorite: _editedProduct.isFavorite,
                   );
                 },
                 validator: (value) {
@@ -100,6 +141,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValues['price'],
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -114,6 +156,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     imageUrl: _editedProduct.imageUrl,
                     price: double.parse(value),
                     description: _editedProduct.description,
+                    isFavorite: _editedProduct.isFavorite,
                   );
                 },
                 validator: (value) {
@@ -126,6 +169,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValues['desctiption'],
                 focusNode: _descriptionFocuseNode,
                 decoration: InputDecoration(labelText: 'Description'),
                 keyboardType: TextInputType.multiline,
@@ -137,6 +181,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     imageUrl: _editedProduct.imageUrl,
                     price: _editedProduct.price,
                     description: value,
+                    isFavorite: _editedProduct.isFavorite,
                   );
                 },
                 validator: (value) {
@@ -180,6 +225,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           imageUrl: value,
                           price: _editedProduct.price,
                           description: _editedProduct.description,
+                          isFavorite: _editedProduct.isFavorite,
                         );
                       },
                       validator: (value) {
