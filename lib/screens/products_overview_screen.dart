@@ -1,4 +1,5 @@
 import 'package:MyShop/providers/cart.dart';
+import 'package:MyShop/providers/products_provider.dart';
 import 'package:MyShop/screens/cart_screen.dart';
 import 'package:MyShop/widgets/app_drawer.dart';
 import 'package:MyShop/widgets/badge.dart';
@@ -18,6 +19,28 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _showOnlyFavorites = false;
+  bool _isInit = true;
+  bool _isLoaading = true;
+
+  @override
+  void initState() {
+    // Future.delayed(Duration.zero).then((value) =>
+    // Provider.of<Products>(context).getProductsFromDatabase());
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      Provider.of<Products>(context).getProductsFromDatabase().then((_){
+        setState(() {
+          _isLoaading = false;
+        });
+      });
+      _isInit = false;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,20 +67,19 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
           Consumer<Cart>(
             builder: (BuildContext _, _cartData, Widget ch) {
-             return Badge(
-                child: ch,
-                value: _cartData.itemCount.toString());
+              return Badge(child: ch, value: _cartData.itemCount.toString());
             },
             child: IconButton(
-                  icon: Icon(Icons.shopping_cart), onPressed: () {
-                    Navigator.pushNamed(context, CartScreen.routName);
-                  },
-                ),
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.pushNamed(context, CartScreen.routName);
+              },
+            ),
           ),
         ],
       ),
       drawer: AppDrawer(),
-      body: SafeArea(
+      body: _isLoaading ? Center(child: CircularProgressIndicator(),): SafeArea(
         child: Container(
           child: ProductGrid(_showOnlyFavorites),
         ),
