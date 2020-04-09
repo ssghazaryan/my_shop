@@ -1,4 +1,5 @@
 import 'package:MyShop/providers/cart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,9 +17,32 @@ class CartItem extends StatelessWidget {
     @required this.title,
     @required this.count,
   });
+
   @override
   Widget build(BuildContext context) {
     return Dismissible(
+      confirmDismiss: (direction) {
+        return showDialog(
+            context: context,
+            builder: (ctx) => CupertinoAlertDialog(
+                  title: Text('Are you sure?'),
+                  content: Text('Do you want to remove item from the cart?'),
+                  actions: [
+                    FlatButton(
+                      child: Text('No'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text('Yes'),
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                    ),
+                  ],
+                ));
+      },
       direction: DismissDirection.endToStart,
       key: ValueKey(id),
       onDismissed: (direction) {
