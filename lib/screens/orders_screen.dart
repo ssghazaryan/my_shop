@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/orders.dart' as provider;
 
 class OrdersScreen extends StatelessWidget {
-//   static const routName = '/order-screen';
+   static const routName = '/order-screen';
 
 //   @override
 //   _OrdersScreenState createState() => _OrdersScreenState();
