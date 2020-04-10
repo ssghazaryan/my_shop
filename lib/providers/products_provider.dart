@@ -1,3 +1,4 @@
+import '../models/rest_exception.dart';
 import 'package:dio/dio.dart';
 
 import '../providers/product.dart';
@@ -78,19 +79,40 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final index = _items.indexWhere((element) => id == element.id);
     if (index >= 0) {
-      _items[index] = newProduct;
+      final url = 'https://my-shop-a763e.firebaseio.com/products/$id.json';
+      try {
+        await Dio().patch(url, data: {
+          'title': newProduct.title,
+          'imageUrl': newProduct.imageUrl,
+          'price': newProduct.price,
+          'description': newProduct.description,
+        });
+        _items[index] = newProduct;
+      } catch (error) {
+        print(error);
+      }
       notifyListeners();
     } else {
       print('...');
     }
   }
 
-  void delateProduct(String id) {
-    _items.removeWhere((element) => id == element.id);
+  Future<void> delateProduct(String id) async {
+    final url = 'https://my-shop-a763e.firebaseio.com/products/$id.json';
+    final existingProductIndex =
+        _items.indexWhere((element) => id == element.id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    await Dio().delete(url).catchError((error) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw RestException('Could not delete product.');
+    });
+    existingProduct = null;
   }
 
   Future<void> getProductsFromDatabase() async {
@@ -99,6 +121,9 @@ class Products with ChangeNotifier {
       final response = await Dio().get(url);
       final data = response.data as Map<String, dynamic>;
       final List<Product> loadedProduct = [];
+      if (data == null) {
+        return;
+      }
       data.forEach((prodId, prod) {
         loadedProduct.add(Product(
           description: prod["description"],

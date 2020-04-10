@@ -32,7 +32,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      Provider.of<Products>(context).getProductsFromDatabase().then((_){
+      Provider.of<Products>(context).getProductsFromDatabase().then((_) {
         setState(() {
           _isLoaading = false;
         });
@@ -79,11 +79,26 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _isLoaading ? Center(child: CircularProgressIndicator(),): SafeArea(
-        child: Container(
-          child: ProductGrid(_showOnlyFavorites),
-        ),
-      ),
+      body: _isLoaading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: () {
+               return Provider.of<Products>(context,listen: false)
+                    .getProductsFromDatabase()
+                    .then((_) {
+                  setState(() {
+                    _isLoaading = false;
+                  });
+                });
+              },
+              child: SafeArea(
+                child: Container(
+                  child: ProductGrid(_showOnlyFavorites),
+                ),
+              ),
+            ),
     );
   }
 }
