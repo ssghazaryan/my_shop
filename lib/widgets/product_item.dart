@@ -1,10 +1,13 @@
-import 'package:MyShop/providers/cart.dart';
-import 'package:MyShop/providers/product.dart';
-import 'package:MyShop/screens/product_detail_screen.dart';
+import '../providers/auth.dart';
+import '../providers/cart.dart';
+import '../providers/product.dart';
+import '../screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
+ // ProductItem(String id, String title, String imageUrl);
+
   // final String id;
   // final String title;
   // final String imageUrl;
@@ -19,6 +22,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final _product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -35,7 +39,7 @@ class ProductItem extends StatelessWidget {
                 color: Theme.of(context).accentColor,
               ),
               onPressed: () {
-                _product.toggleFavoriteStatus();
+                _product.toggleFavoriteStatus(auth.token, auth.userId);
               },
             ),
             child: Text('Never changes!'),

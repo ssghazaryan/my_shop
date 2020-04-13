@@ -40,6 +40,10 @@ class Products with ChangeNotifier {
     // ),
   ];
   // var _showFavoritesOnly = false;
+  final String authToken;
+  final String userId;
+
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     // if (_showFavoritesOnly)
@@ -56,14 +60,15 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://my-shop-a763e.firebaseio.com/products.json';
+    final url = 'https://my-shop-a763e.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await Dio().post(url, data: {
         'title': product.title,
         'imageUrl': product.imageUrl,
         'price': product.price,
         'description': product.description,
-        'isFavorite': product.isFavorite,
+        'creatorId' : userId
+        // 'isFavorite': product.isFavorite,
       });
       final newProduct = Product(
           id: response.data['name'],
@@ -73,8 +78,8 @@ class Products with ChangeNotifier {
           description: product.description);
       _items.add(newProduct);
       notifyListeners();
-    } catch (error) {
-      print(error);
+    }on DioError catch (error) {
+      print(error.response.data);
       throw error;
     }
   }
@@ -82,7 +87,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final index = _items.indexWhere((element) => id == element.id);
     if (index >= 0) {
-      final url = 'https://my-shop-a763e.firebaseio.com/products/$id.json';
+      final url = 'https://my-shop-a763e.firebaseio.com/products/$id.json?auth=$authToken';
       try {
         await Dio().patch(url, data: {
           'title': newProduct.title,
@@ -101,7 +106,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> delateProduct(String id) async {
-    final url = 'https://my-shop-a763e.firebaseio.com/products/$id.json';
+    final url = 'https://my-shop-a763e.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProductIndex =
         _items.indexWhere((element) => id == element.id);
     var existingProduct = _items[existingProductIndex];
@@ -115,15 +120,23 @@ class Products with ChangeNotifier {
     existingProduct = null;
   }
 
-  Future<void> getProductsFromDatabase() async {
-    const url = 'https://my-shop-a763e.firebaseio.com/products.json';
+  Future<void> getProductsFromDatabase([bool filerByUser = false]) async {
+    print('her $filerByUser');
+    final filterString = filerByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+     var url = 'https://my-shop-a763e.firebaseio.com/products.json?auth=$authToken&$filerByUser';
     try {
       final response = await Dio().get(url);
       final data = response.data as Map<String, dynamic>;
       final List<Product> loadedProduct = [];
+      print(response.statusCode);
       if (data == null) {
         return;
       }
+      url = 'https://my-shop-a763e.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+
+      final favoriteResponse = await Dio().get(url);
+      final favoriteData = favoriteResponse.data;
+
       data.forEach((prodId, prod) {
         loadedProduct.add(Product(
           description: prod["description"],
@@ -131,7 +144,7 @@ class Products with ChangeNotifier {
           imageUrl: prod["imageUrl"],
           price: prod["price"],
           title: prod["title"],
-          isFavorite: prod["isFavorite"],
+          isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
         ));
         _items = loadedProduct;
       });
