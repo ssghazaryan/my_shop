@@ -7,7 +7,7 @@ import '../widgets/cart_item.dart';
 import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
-  static const routName = '/cart-screen';
+  static const routeName = '/cart-screen';
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
@@ -97,7 +97,7 @@ class _OrderButtonState extends State<OrderButton> {
         setState(() {
           isLoading = false;
         });
-        Navigator.pushNamed(context, OrdersScreen.routName);
+        Navigator.pushNamed(context, OrdersScreen.routeName);
         widget.cart.clear();
       },
       textColor: Theme.of(context).primaryColor,

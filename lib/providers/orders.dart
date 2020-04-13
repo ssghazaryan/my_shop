@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../widgets/cart_item.dart';
 import './cart.dart';
 
 class OrderItem {
@@ -76,6 +75,8 @@ class Orders with ChangeNotifier {
               id: response.data['name'],
               products: cardProducts));
       notifyListeners();
-    } on DioError catch (error) {}
+    } on DioError catch (error) {
+      print(error);
+    }
   }
 }

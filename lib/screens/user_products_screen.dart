@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../providers/products_provider.dart';
 
 class UserProductsScreen extends StatelessWidget {
-  static const routName = '/user-product-item';
+  static const routeName = '/user-product-item';
 
   Future<void> _refreshProducts(BuildContext context) async{
     await Provider.of<Products>(context,listen: false).getProductsFromDatabase();
@@ -24,7 +24,7 @@ class UserProductsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed(EditProductScreen.routName);
+              Navigator.of(context).pushNamed(EditProductScreen.routeName);
             },
           ),
         ],

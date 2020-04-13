@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailPage extends StatelessWidget {
-  static const routName = '/product-detail';
+  static const routeName = '/product-detail';
 
   @override
   Widget build(BuildContext context) {

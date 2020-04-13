@@ -1,3 +1,5 @@
+import './screens/auth_screen.dart';
+
 import './screens/edit_product_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/orders_screen.dart';
@@ -39,13 +41,15 @@ class MyApp extends StatelessWidget {
               accentColor: Colors.deepOrange,
               visualDensity: VisualDensity.adaptivePlatformDensity,
               fontFamily: 'Lato'),
-          home: ProductsOverviewScreen(),
+          home: AuthScreen(),
           routes: {
-            ProductDetailPage.routName: (ctx) => ProductDetailPage(),
-            CartScreen.routName: (ctx) => CartScreen(),
-            OrdersScreen.routName: (ctx) => OrdersScreen(),
-            UserProductsScreen.routName: (ctx) => UserProductsScreen(),
-            EditProductScreen.routName: (ctx) => EditProductScreen(),
+            ProductsOverviewScreen.routeName: (ctx) => ProductDetailPage(),
+            ProductDetailPage.routeName: (ctx) => ProductDetailPage(),
+            CartScreen.routeName: (ctx) => CartScreen(),
+            OrdersScreen.routeName: (ctx) => OrdersScreen(),
+            UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+            EditProductScreen.routeName: (ctx) => EditProductScreen(),
+            AuthScreen.routeName: (ctx) => AuthScreen(),
           },
         ),
       ),

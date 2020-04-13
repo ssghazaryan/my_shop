@@ -13,6 +13,7 @@ enum FilterOptions {
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const routeName = '/product-overview-screen'; 
   @override
   _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
 }
@@ -72,7 +73,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
-                Navigator.pushNamed(context, CartScreen.routName);
+                Navigator.pushNamed(context, CartScreen.routeName);
               },
             ),
           ),
