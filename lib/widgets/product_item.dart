@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
- // ProductItem(String id, String title, String imageUrl);
+  // ProductItem(String id, String title, String imageUrl);
 
   // final String id;
   // final String title;
@@ -69,9 +69,13 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         child: GestureDetector(
-          child: Image.network(
-            _product.imageUrl,
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: _product.id,
+            child: FadeInImage(
+              placeholder: AssetImage('assets/images/original.png'),
+              image: NetworkImage(_product.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
           onTap: () {
             Navigator.of(context)
