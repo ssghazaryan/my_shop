@@ -1,7 +1,8 @@
-import '../providers/auth.dart';
-import '../providers/cart.dart';
+import '../pages/auth/providers/auth.dart';
+import '../pages/cart/providers/cart.dart';
+import '../pages/product_detail/screens/product_detail_screen.dart';
+
 import '../providers/product.dart';
-import '../screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

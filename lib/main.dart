@@ -1,19 +1,22 @@
-import 'package:MyShop/helpers/custom_route.dart';
+import './pages/auth/screens/registration_scrren.dart';
+import './pages/auth/providers/registration_provider.dart';
+import './helpers/custom_route.dart';
+import './pages/auth/providers/auth.dart';
+import './pages/auth/screens/auth_screen.dart';
+import './pages/cart/providers/cart.dart';
+import './pages/cart/screens/cart_screen.dart';
+import './pages/orders/providers/orders.dart';
+import './pages/orders/screens/orders_screen.dart';
+import './pages/product_detail/screens/product_detail_screen.dart';
+import './pages/product_screen/screens/products_overview_screen.dart';
+import './pages/manage_products/screens/user_products_screen.dart';
 
 import './screens/splash_screen.dart';
-import './providers/auth.dart';
-import './screens/auth_screen.dart';
 import './screens/edit_product_screen.dart';
-import './screens/user_products_screen.dart';
-import './screens/orders_screen.dart';
-import './providers/orders.dart';
-import './providers/cart.dart';
-import './screens/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import './screens/products_overview_screen.dart';
-import 'screens/product_detail_screen.dart';
 import './providers/products_provider.dart';
+import './globals/colors.dart' as col;
 
 void main() {
   runApp(MyApp());
@@ -37,6 +40,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Cart(),
         ),
+        ChangeNotifierProvider.value(
+          value: RegistrationProvider(),
+        ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: (BuildContext context) => Orders(null, null, []),
           update: (BuildContext context, auth, previosOrders) => Orders(
@@ -50,7 +56,19 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'My Shop',
           theme: ThemeData(
-              primarySwatch: Colors.purple,
+              buttonTheme: ButtonThemeData(
+                buttonColor: col.light,
+                highlightColor: Theme.of(context).scaffoldBackgroundColor,
+                splashColor: Colors.greenAccent,
+              ),
+              textTheme: TextTheme(
+                bodyText1: TextStyle(color: Colors.white),
+                bodyText2: TextStyle(color: Colors.white),
+              ),
+              iconTheme: IconThemeData(color: Colors.white),
+              scaffoldBackgroundColor: col.darkColor,
+              appBarTheme: AppBarTheme(color: col.lowDarkColor),
+              primarySwatch: Colors.blue,
               accentColor: Colors.deepOrange,
               visualDensity: VisualDensity.adaptivePlatformDensity,
               fontFamily: 'Lato',
@@ -74,6 +92,7 @@ class MyApp extends StatelessWidget {
             UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
             EditProductScreen.routeName: (ctx) => EditProductScreen(),
             AuthScreen.routeName: (ctx) => AuthScreen(),
+            RegitrationScreen.routeName: (ctx) => RegitrationScreen(),
           },
         ),
       ),

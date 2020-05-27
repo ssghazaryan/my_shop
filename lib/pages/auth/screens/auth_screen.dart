@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:MyShop/pages/auth/screens/registration_scrren.dart';
+
+import '../../../models/rest_exception.dart';
+
 import '../providers/auth.dart';
-import '../screens/products_overview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/rest_exception.dart';
+import '../../../globals/colors.dart' as col;
 
 enum AuthMode { Signup, Login }
 
@@ -23,10 +26,7 @@ class AuthScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
-                ],
+                colors: [col.light, col.darkColor],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 stops: [0, 1],
@@ -46,12 +46,12 @@ class AuthScreen extends StatelessWidget {
                       margin: EdgeInsets.only(bottom: 20.0),
                       padding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
-                      transform: Matrix4.rotationZ(-8 * pi / 180)
-                        ..translate(-10.0),
+                      // transform: Matrix4.rotationZ(-8 * pi / 180)
+                      //   ..translate(-10.0),
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.deepOrange.shade900,
+                        color: col.darkColor,
                         boxShadow: [
                           BoxShadow(
                             blurRadius: 8,
@@ -61,7 +61,7 @@ class AuthScreen extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        'MyShop',
+                        'YourShop',
                         style: TextStyle(
                           color: Theme.of(context).accentTextTheme.title.color,
                           fontSize: 50,
@@ -117,8 +117,7 @@ class _AuthCardState extends State<AuthCard>
         milliseconds: 300,
       ),
     );
-    _slideAnimation = Tween<Offset>(
-            begin: Offset(0, -1.5), end: Offset(0, 0))
+    _slideAnimation = Tween<Offset>(begin: Offset(0, -1.5), end: Offset(0, 0))
         .animate(CurvedAnimation(
             parent: _controller, curve: Curves.fastLinearToSlowEaseIn));
     _slideAnimation.addListener(() => setState(() {}));
@@ -200,19 +199,19 @@ class _AuthCardState extends State<AuthCard>
     });
   }
 
-  void _switchAuthMode() {
-    if (_authMode == AuthMode.Login) {
-      setState(() {
-        _authMode = AuthMode.Signup;
-      });
-      _controller.forward();
-    } else {
-      setState(() {
-        _authMode = AuthMode.Login;
-      });
-      _controller.reverse();
-    }
-  }
+  // void _switchAuthMode() {
+  //   if (_authMode == AuthMode.Login) {
+  //     setState(() {
+  //       _authMode = AuthMode.Signup;
+  //     });
+  //     _controller.forward();
+  //   } else {
+  //     setState(() {
+  //       _authMode = AuthMode.Login;
+  //     });
+  //     _controller.reverse();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -227,16 +226,18 @@ class _AuthCardState extends State<AuthCard>
         height: _authMode == AuthMode.Signup ? 320 : 260,
         curve: Curves.easeIn,
         //  height: _heightAnimation.value.height,
-        constraints: BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        constraints:
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 330 : 300),
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+        child: Center(
+          child: Form(
+            key: _formKey,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'E-Mail'),
+                  decoration: InputDecoration(labelText: 'Электронный адрес'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value.isEmpty || !value.contains('@')) {
@@ -248,7 +249,7 @@ class _AuthCardState extends State<AuthCard>
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(labelText: 'Пароль'),
                   obscureText: false,
                   controller: _passwordController,
                   validator: (value) {
@@ -260,29 +261,29 @@ class _AuthCardState extends State<AuthCard>
                     _authData['password'] = value;
                   },
                 ),
-                AnimatedContainer(
-                  curve: Curves.easeIn,
-                  constraints: BoxConstraints(
-                      minHeight: _authMode == AuthMode.Signup ? 60 : 0,
-                      maxHeight: _authMode == AuthMode.Signup ? 120 : 0),
-                  duration: Duration(milliseconds: 300),
-                  child: SlideTransition(
-                    position:  _slideAnimation,
-                    child: TextFormField(
-                      enabled: _authMode == AuthMode.Signup,
-                      decoration:
-                          InputDecoration(labelText: 'Confirm Password'),
-                      obscureText: false,
-                      validator: _authMode == AuthMode.Signup
-                          ? (value) {
-                              if (value != _passwordController.text) {
-                                return 'Passwords do not match!';
-                              }
-                            }
-                          : null,
-                    ),
-                  ),
-                ),
+                // AnimatedContainer(
+                //   curve: Curves.easeIn,
+                //   constraints: BoxConstraints(
+                //       minHeight: _authMode == AuthMode.Signup ? 60 : 0,
+                //       maxHeight: _authMode == AuthMode.Signup ? 120 : 0),
+                //   duration: Duration(milliseconds: 300),
+                //   child: SlideTransition(
+                //     position: _slideAnimation,
+                //     child: TextFormField(
+                //       enabled: _authMode == AuthMode.Signup,
+                //       decoration:
+                //           InputDecoration(labelText: 'Confirm Password'),
+                //       obscureText: false,
+                //       validator: _authMode == AuthMode.Signup
+                //           ? (value) {
+                //               if (value != _passwordController.text) {
+                //                 return 'Passwords do not match!';
+                //               }
+                //             }
+                //           : null,
+                //     ),
+                //   ),
+                // ),
                 SizedBox(
                   height: 20,
                 ),
@@ -302,9 +303,10 @@ class _AuthCardState extends State<AuthCard>
                     textColor: Theme.of(context).primaryTextTheme.button.color,
                   ),
                 FlatButton(
-                  child: Text(
-                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                  onPressed: _switchAuthMode,
+                  child: Text('Регистрация'),
+                  onPressed: () {
+                    Navigator.pushNamed(context, RegitrationScreen.routeName);
+                  },
                   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textColor: Theme.of(context).primaryColor,

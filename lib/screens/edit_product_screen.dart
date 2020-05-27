@@ -1,6 +1,8 @@
 import 'package:MyShop/providers/product.dart';
 import 'package:MyShop/providers/products_provider.dart';
+import 'package:MyShop/screens/barcode_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 
 class EditProductScreen extends StatefulWidget {
@@ -120,10 +122,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
       //   Navigator.pop(context);
       // }
     }
-     setState(() {
-          isLoading = false;
-        });
-      Navigator.pop(context);
+    setState(() {
+      isLoading = false;
+    });
+    Navigator.pop(context);
   }
 
   @override
@@ -135,7 +137,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
           IconButton(
             icon: Icon(Icons.save),
             onPressed: _saveForm,
-          )
+          ),
+          IconButton(
+            icon: Icon(AntDesign.barcode),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>QRViewExample(),),);
+            },
+          ),
         ],
       ),
       body: isLoading

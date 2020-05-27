@@ -1,56 +1,70 @@
-import 'package:MyShop/helpers/custom_route.dart';
-
-import '../providers/auth.dart';
+import '../pages/auth/providers/auth.dart';
+import '../pages/orders/screens/orders_screen.dart';
+import '../pages/manage_products/screens/user_products_screen.dart';
 import 'package:provider/provider.dart';
-import '../screens/orders_screen.dart';
-import '../screens/user_products_screen.dart';
 import 'package:flutter/material.dart';
+import '../globals/colors.dart' as col;
 
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
-        children: [
-          AppBar(
-            title: Text('Hello Friend'),
-            automaticallyImplyLeading: false,
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.shop),
-            title: Text('Shop'),
-            onTap: (){
-              Navigator.of(context).pushReplacementNamed('/');
-            },
-          ),
-           Divider(),
-          ListTile(
-            leading: Icon(Icons.payment),
-            title: Text('Orders'),
-            onTap: (){
-              //Navigator.of(context).pushReplacement(CustomRout(builder: (ctx) =>OrdersScreen()));
-              Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
-            },
-          ),
-             Divider(),
-          ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('Manage Products'),
-            onTap: (){
-              Navigator.of(context).pushReplacementNamed(UserProductsScreen.routeName);
-            },
-          ),
-             Divider(),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: (){
-           //   Navigator.of(context).pushReplacementNamed('/');
-              Provider.of<Auth>(context,listen: false).logout();
-            },
-          ),
-        ],
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              currentAccountPicture: CircleAvatar(
+                radius: 20,
+                backgroundColor: col.light,
+                child: Icon(
+                  Icons.account_circle,
+                  size: 30,
+                ),
+              ),
+              decoration:
+                  BoxDecoration(color: Theme.of(context).appBarTheme.color),
+              accountEmail: Text('serg.ghazaryan@mail.ru'),
+              accountName: Text('Segey Ghazaryan'),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.shop, color: Colors.white),
+              title: Text('Shop'),
+              onTap: () {
+                Navigator.of(context).pushReplacementNamed('/');
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.payment, color: Colors.white),
+              title: Text('Orders'),
+              onTap: () {
+                //Navigator.of(context).pushReplacement(CustomRout(builder: (ctx) =>OrdersScreen()));
+                Navigator.of(context)
+                    .pushReplacementNamed(OrdersScreen.routeName);
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.edit, color: Colors.white),
+              title: Text('Manage Products'),
+              onTap: () {
+                Navigator.of(context)
+                    .pushReplacementNamed(UserProductsScreen.routeName);
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.exit_to_app, color: Colors.white),
+              title: Text('Logout'),
+              onTap: () {
+                //   Navigator.of(context).pushReplacementNamed('/');
+                Provider.of<Auth>(context, listen: false).logout();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import '../../../models/rest_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/rest_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +31,7 @@ class Auth with ChangeNotifier {
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
     final url =
-        "https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyAQVUeJifi6PFOPNynFYcCtQEuPR2Ylm98";
+        "https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyBP8O-Uz8SsptTdXUQpxbgMKqBSUUykRuI";
 
     try {
       final response = await Dio().post(url, data: {
@@ -58,6 +57,7 @@ class Auth with ChangeNotifier {
       });
       prefs.setString('userData', userData);
     } on DioError catch (error) {
+      print(error.response.data);
       if (error.response.data['error'] != null) {
         throw RestException(error.response.data['error']['message']);
       }

@@ -1,4 +1,4 @@
-import 'package:MyShop/providers/cart.dart';
+import '../pages/cart/providers/cart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
