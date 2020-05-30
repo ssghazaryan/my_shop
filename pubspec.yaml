@@ -34,6 +34,10 @@ dependencies:
   shared_preferences: ^0.5.6+3
   flutter_icons: ^1.1.0
   qr_code_scanner: ^0.0.13
+  toast: ^0.1.5
+  flutter_gifimage: ^1.0.1
+  flutter_spinkit: "^2.1.0"
+
 
   # flutter_barcode_scanner: ^0.1.7
 
@@ -58,6 +62,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/original.png
+    # - assets/images/loading.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

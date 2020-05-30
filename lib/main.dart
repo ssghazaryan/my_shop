@@ -1,5 +1,8 @@
+import 'package:MyShop/pages/shops/providers/shops_provider.dart';
+import 'package:MyShop/pages/shops/screens/add_shop_screen.dart';
+import 'package:MyShop/pages/shops/screens/shops_screen.dart';
+
 import './pages/auth/screens/registration_scrren.dart';
-import './pages/auth/providers/registration_provider.dart';
 import './helpers/custom_route.dart';
 import './pages/auth/providers/auth.dart';
 import './pages/auth/screens/auth_screen.dart';
@@ -10,8 +13,6 @@ import './pages/orders/screens/orders_screen.dart';
 import './pages/product_detail/screens/product_detail_screen.dart';
 import './pages/product_screen/screens/products_overview_screen.dart';
 import './pages/manage_products/screens/user_products_screen.dart';
-
-import './screens/splash_screen.dart';
 import './screens/edit_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,8 +41,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Cart(),
         ),
-        ChangeNotifierProvider.value(
-          value: RegistrationProvider(),
+        ChangeNotifierProvider(
+          create: (BuildContext context) => ShopsProvider(),
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: (BuildContext context) => Orders(null, null, []),
@@ -59,7 +60,7 @@ class MyApp extends StatelessWidget {
               buttonTheme: ButtonThemeData(
                 buttonColor: col.light,
                 highlightColor: Theme.of(context).scaffoldBackgroundColor,
-                splashColor: Colors.greenAccent,
+                splashColor: Colors.green,
               ),
               textTheme: TextTheme(
                 bodyText1: TextStyle(color: Colors.white),
@@ -76,14 +77,7 @@ class MyApp extends StatelessWidget {
                 TargetPlatform.android: CustomPageTransitionBuilder(),
                 TargetPlatform.iOS: CustomPageTransitionBuilder(),
               })),
-          home: auth.isAuth
-              ? ProductsOverviewScreen()
-              : FutureBuilder(
-                  future: auth.tryAutoLogin(),
-                  builder: (BuildContext context, snapshot) =>
-                      snapshot.connectionState == ConnectionState.waiting
-                          ? SplashScreen()
-                          : AuthScreen()),
+          home: AuthScreen(),
           routes: {
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
             ProductDetailPage.routeName: (ctx) => ProductDetailPage(),
@@ -93,6 +87,8 @@ class MyApp extends StatelessWidget {
             EditProductScreen.routeName: (ctx) => EditProductScreen(),
             AuthScreen.routeName: (ctx) => AuthScreen(),
             RegitrationScreen.routeName: (ctx) => RegitrationScreen(),
+            ShopsScreen.routeName: (ctx) => ShopsScreen(),
+            AddShopScreen.routeName: (ctx) => AddShopScreen(),
           },
         ),
       ),

@@ -4,6 +4,7 @@ import '../pages/manage_products/screens/user_products_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../globals/colors.dart' as col;
+import '../globals/globals.dart' as globals;
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -24,8 +25,9 @@ class AppDrawer extends StatelessWidget {
               ),
               decoration:
                   BoxDecoration(color: Theme.of(context).appBarTheme.color),
-              accountEmail: Text('serg.ghazaryan@mail.ru'),
-              accountName: Text('Segey Ghazaryan'),
+              accountEmail: Text('${globals.user.email}'),
+              accountName:
+                  Text(globals.user.name + ' ' + globals.user.secondName),
             ),
             Divider(),
             ListTile(

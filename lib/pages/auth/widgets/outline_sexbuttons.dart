@@ -5,10 +5,12 @@ import '../../../globals/colors.dart' as col;
 class OutlineSexButtonsForRegistr extends StatelessWidget {
   final String name;
   final Function function;
+  final bool value;
 
   OutlineSexButtonsForRegistr({
     @required this.name,
     @required this.function,
+    @required this.value,
   });
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,9 @@ class OutlineSexButtonsForRegistr extends StatelessWidget {
             Expanded(
               child: Text(name),
             ),
-            Icon(MaterialIcons.radio_button_unchecked)
+            Icon(value
+                ? MaterialIcons.radio_button_checked
+                : MaterialIcons.radio_button_unchecked)
           ],
         ),
       ),
