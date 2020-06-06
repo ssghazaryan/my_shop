@@ -6,6 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddShopScreen extends StatelessWidget {
+  final ShopsRegistrProvider provider;
+  AddShopScreen(this.provider);
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: provider,
+        )
+      ],
+      child: AddShopScreenChild(),
+    );
+  }
+}
+
+class AddShopScreenChild extends StatelessWidget {
   static const routeName = '/shops-create';
 
   @override
@@ -87,7 +103,7 @@ class AddShopScreen extends StatelessWidget {
                     if (!provider.formKey.currentState.validate()) {
                       return;
                     } else {
-                      provider.saveMagazin();
+                      provider.saveMagazin(context);
                     }
                   },
                   child: Text(
@@ -97,7 +113,7 @@ class AddShopScreen extends StatelessWidget {
                 ),
               ),
             ),
-          if (provider.isLoading)
+          if (provider.creatingMagazin)
             PreLoader(
               color: true,
               marigin: true,

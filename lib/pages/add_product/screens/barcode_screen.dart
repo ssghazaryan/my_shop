@@ -150,7 +150,6 @@ class _ScanBarCodeState extends State<ScanBarCode> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      print(scanData);
       setState(() {
         controller?.pauseCamera();
         qrText = scanData;
@@ -158,7 +157,7 @@ class _ScanBarCodeState extends State<ScanBarCode> {
       showDialog(
         barrierDismissible: false,
         context: context,
-        builder: (BuildContext context1) {
+        builder: (BuildContext context) {
           // return object of type Dialog
           return CupertinoAlertDialog(
             title: new Text("Сканированный код $scanData ?"),
@@ -168,7 +167,7 @@ class _ScanBarCodeState extends State<ScanBarCode> {
               new FlatButton(
                 child: new Text("Нет"),
                 onPressed: () {
-                  Navigator.of(context1).pop();
+                  Navigator.of(context).pop();
                   setState(() {
                     controller.resumeCamera();
                     qrText = '';
@@ -178,14 +177,17 @@ class _ScanBarCodeState extends State<ScanBarCode> {
               new FlatButton(
                 child: new Text("Да"),
                 onPressed: () {
-                  Navigator.of(context1).pop();
-                  Navigator.pop(context, qrText);
+                  Navigator.pop(context, true);
                 },
               ),
             ],
           );
         },
-      );
+      ).then((value) {
+        if (value != null) {
+          Navigator.pop(context, qrText);
+        }
+      });
     });
   }
 

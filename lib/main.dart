@@ -86,7 +86,6 @@ class MyApp extends StatelessWidget {
         AuthScreen.routeName: (ctx) => AuthScreen(),
         RegitrationScreen.routeName: (ctx) => RegitrationScreen(),
         ShopsRegistrScreen.routeName: (ctx) => ShopsRegistrScreen(),
-        AddShopScreen.routeName: (ctx) => AddShopScreen(),
       },
       //   ),
       // ),

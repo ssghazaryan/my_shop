@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ShopModel {
+  final String shopId;
   final String creatorId;
   final String name;
   final String addres;
@@ -8,6 +9,7 @@ class ShopModel {
   final String type;
 
   ShopModel({
+    @required this.shopId,
     @required this.creatorId,
     @required this.name,
     @required this.addres,

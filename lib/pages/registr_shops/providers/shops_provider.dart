@@ -1,7 +1,7 @@
 import 'package:MyShop/models/shop_model.dart';
+import 'package:MyShop/pages/shop/screens/shop_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../globals/api_keys.dart' as api;
 import '../../../globals/globals.dart' as globals;
 
@@ -21,7 +21,6 @@ class ShopsRegistrProvider with ChangeNotifier {
       getShops();
     }
   }
-
 
   setdefault() {
     _name = '';
@@ -87,14 +86,6 @@ class ShopsRegistrProvider with ChangeNotifier {
       final url =
           'https://my-shop-a763e.firebaseio.com/shops/${globals.user.userID}.json?auth=${api.apiDatabase}';
       try {
-        globals.shop = ShopModel(
-          name: _name,
-          addres: _addres,
-          date: DateTime.now(),
-          creatorId: globals.user.userID,
-          type: _typeOfMag,
-        );
-
         final response = await Dio().get(url);
 
         _shopsList.clear();
@@ -104,6 +95,7 @@ class ShopsRegistrProvider with ChangeNotifier {
           temp.forEach((key, value) {
             _shopsList.add(
               ShopModel(
+                shopId: key,
                 name: value['name'],
                 addres: value['addres'],
                 creatorId: value['creatorId'],
@@ -122,7 +114,7 @@ class ShopsRegistrProvider with ChangeNotifier {
     setLoading(false);
   }
 
-  Future<void> saveMagazin() async {
+  Future<void> saveMagazin(BuildContext context) async {
     setCreatingMagazin(true);
     final url =
         'https://my-shop-a763e.firebaseio.com/shops/${globals.user.userID}.json?auth=${api.apiDatabase}';
@@ -135,15 +127,24 @@ class ShopsRegistrProvider with ChangeNotifier {
         'type': _typeOfMag
       };
 
-      globals.shop = ShopModel(
-        name: _name,
-        addres: _addres,
-        date: DateTime.now(),
-        creatorId: globals.user.userID,
-        type: _typeOfMag,
-      );
-
       final response = await Dio().post(url, data: match);
+
+      if (response.statusCode == 200) {
+        if (response.data['name'] != null) {
+          globals.shop = ShopModel(
+            shopId: response.data['name'],
+            name: _name,
+            addres: _addres,
+            date: DateTime.now(),
+            creatorId: globals.user.userID,
+            type: _typeOfMag,
+          );
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => ProductsOverviewScreen()),
+              (route) => false);
+        }
+      }
 
       print(response.data);
       notifyListeners();

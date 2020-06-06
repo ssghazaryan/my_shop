@@ -24,7 +24,6 @@ class ShopsRegistrScreen extends StatelessWidget {
 }
 
 class ShopsRegistrScreenChild extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ShopsRegistrProvider>(context);
@@ -33,7 +32,8 @@ class ShopsRegistrScreenChild extends StatelessWidget {
         backgroundColor: Colors.green,
         onPressed: () {
           provider.setdefault();
-          Navigator.pushNamed(context, AddShopScreen.routeName);
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddShopScreen(provider),),);
         },
         child: Icon(Icons.add),
       ),

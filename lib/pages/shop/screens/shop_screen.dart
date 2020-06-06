@@ -26,7 +26,6 @@ class ProductsOverviewScreenChild extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<ShopProvider>(context);
     globals.globalContext = context;
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

@@ -37,126 +37,184 @@ class AddProductScreenChild extends StatelessWidget {
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Form(
-                key: provider.formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextFieldOutline(
-                      onChange: (value) {
-                        // provider.setName(value);
-                      },
-                      hint: 'Название',
-                      function: (value) {
-                        if (value.trim().isEmpty)
-                          return 'Заполните поле';
-                        else
-                          return null;
-                      },
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFieldOutline(
-                            onChange: (value) {
-                              // provider.setAddrees(value);
+              child: provider.isLoading
+                  ? SizedBox()
+                  : provider.controllerBarCode.text == ''
+                      ? Center(
+                          child: CupertinoButton(
+                            color: Colors.green,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      ScanBarCode(),
+                                ),
+                              ).then((value) {
+                                if (value != null) {
+                                  provider.getProduct(value);
+                                }
+                              });
                             },
-                            hint: 'Цена',
-                            function: (value) {
-                              if (value.trim().isEmpty)
-                                return 'Заполните поле';
-                              else
-                                return null;
-                            },
+                            child: Text(
+                              'Отсканировать',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                      : Form(
+                          key: provider.formKey,
+                          child: ListView(
+                            children: [
+                              if (provider.controllerProductImageUrl.text != '')
+                                Image.network(
+                                  provider.controllerProductImageUrl.text,
+                                  height: 250,
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              TextFieldOutline(
+                                controller: provider.controllerProductName,
+                                onChange: (value) {
+                                  provider.setName(value);
+                                },
+                                hint: 'Название товара',
+                                function: (value) {
+                                  if (value.trim().isEmpty)
+                                    return 'Заполните поле';
+                                  else
+                                    return null;
+                                },
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFieldOutline(
+                                      controller:
+                                          provider.controllerProductPrice,
+                                      onChange: (value) {
+                                        provider.setPrice(value);
+                                      },
+                                      hint: 'Цена',
+                                      function: (value) {
+                                        if (value.trim().isEmpty)
+                                          return 'Заполните поле';
+                                        else
+                                          return null;
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: TextFieldOutline(
+                                      controller:
+                                          provider.controllerProductWeight,
+                                      onChange: (value) {
+                                        provider.setWeight(value);
+                                      },
+                                      hint: 'Вес',
+                                      function: (value) {
+                                        if (value.trim().isEmpty)
+                                          return 'Заполните поле';
+                                        else
+                                          return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              TextFieldOutline(
+                                controller: provider.controllerProductImageUrl,
+                                onChange: (value) {
+                                  provider.setImage(value);
+                                },
+                                hint: 'URL картинки',
+                                function: (value) {
+                                  if (value.trim().isEmpty)
+                                    return 'Заполните поле';
+                                  else
+                                    return null;
+                                },
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              TextFieldOutline(
+                                controller: provider.controllerBarCode,
+                                onChange: (value) {
+                                  provider.setBarCode(value);
+                                },
+                                hint: 'BarCode',
+                                function: (value) {
+                                  if (value.trim().isEmpty)
+                                    return 'Заполните поле';
+                                  else
+                                    return null;
+                                },
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: TextFieldOutline(
-                            onChange: (value) {
-                              // provider.setAddrees(value);
-                            },
-                            hint: 'Количество',
-                            function: (value) {
-                              if (value.trim().isEmpty)
-                                return 'Заполните поле';
-                              else
-                                return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    TextFieldOutline(
-                      onChange: (value) {
-                        // provider.setTypeOfMag(value);
-                      },
-                      hint: 'Тип магазина',
-                      function: (value) {
-                        if (value.trim().isEmpty)
-                          return 'Заполните поле';
-                        else
-                          return null;
-                      },
-                    ),
-                  ],
-                ),
-              ),
             ),
           ),
           if (MediaQuery.of(context).viewInsets.bottom == 0.0)
-            Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: provider.barCode == ''
-                    ? CupertinoButton(
-                        color: Colors.green,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) => ScanBarCode(),
-                            ),
-                          ).then((value) {
-                            if (value != null) {
-                              print(value);
+            if (provider.controllerBarCode.text != '')
+              Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CupertinoButton(
+                          color: Colors.green,
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            if (!provider.formKey.currentState.validate()) {
+                              return;
+                            } else {
+                              provider.sendNewProduct();
                             }
-                          });
-                        },
-                        child: Text(
-                          'Отсканировать',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    : CupertinoButton(
-                        color: Colors.green,
-                        onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          if (!provider.formKey.currentState.validate()) {
-                            return;
-                          } else {
-                            // provider.saveMagazin();
-                          }
-                        },
-                        child: Text(
-                          'Создать',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          },
+                          child: Text(
+                            'Создать',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: IconButton(
+                          icon: Icon(Icons.refresh),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ScanBarCode(),
+                              ),
+                            ).then((value) {
+                              if (value != null) {
+                                provider.getProduct(value);
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
           if (provider.isLoading)
             PreLoader(
               color: true,
