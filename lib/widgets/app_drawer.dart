@@ -1,9 +1,10 @@
-import '../pages/auth/providers/auth.dart';
-import '../pages/orders/screens/orders_screen.dart';
-import '../pages/manage_products/screens/user_products_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:MyShop/func/logout.dart';
+import 'package:MyShop/pages/cassa/screens/cassa_screen.dart';
+import 'package:MyShop/pages/shop/screens/shop_screen.dart';
+import 'package:MyShop/pages/warehouse/screens/ware_house_screen.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+
 import 'package:flutter/material.dart';
-import '../globals/colors.dart' as col;
 import '../globals/globals.dart' as globals;
 
 class AppDrawer extends StatelessWidget {
@@ -14,55 +15,121 @@ class AppDrawer extends StatelessWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
-            UserAccountsDrawerHeader(
-              currentAccountPicture: CircleAvatar(
-                radius: 20,
-                backgroundColor: col.light,
-                child: Icon(
-                  Icons.account_circle,
-                  size: 30,
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                      color: Colors.black54,
+                      blurRadius: 15.0,
+                      offset: Offset(0.0, 0.75))
+                ],
+                color: Theme.of(context).appBarTheme.color,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              globals.user.name + ' ' + globals.user.secondName,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              '${globals.user.email}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {},
+                      )
+                    ],
+                  ),
                 ),
               ),
-              decoration:
-                  BoxDecoration(color: Theme.of(context).appBarTheme.color),
-              accountEmail: Text('${globals.user.email}'),
-              accountName:
-                  Text(globals.user.name + ' ' + globals.user.secondName),
             ),
             Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      globals.shop.name,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios)
+                ],
+              ),
+            ),
+
+            // Divider(),
+            // ListTile(
+            //   leading:
+            //       Icon(MaterialIcons.store_mall_directory, color: Colors.white),
+            //   title: Text('Магазины'),
+            //   onTap: () {
+            //     Navigator.of(context).pushReplacementNamed('/');
+            //   },
+            // ),
+            Divider(),
             ListTile(
-              leading: Icon(Icons.shop, color: Colors.white),
-              title: Text('Shop'),
+              leading: Icon(MaterialCommunityIcons.account_group,
+                  color: Colors.white),
+              title: Text('Работники'),
               onTap: () {
-                Navigator.of(context).pushReplacementNamed('/');
+                Navigator.pop(context);
               },
             ),
             Divider(),
             ListTile(
-              leading: Icon(Icons.payment, color: Colors.white),
-              title: Text('Orders'),
+              leading: Icon(MaterialCommunityIcons.cards, color: Colors.white),
+              title: Text('Товары'),
               onTap: () {
-                //Navigator.of(context).pushReplacement(CustomRout(builder: (ctx) =>OrdersScreen()));
                 Navigator.of(context)
-                    .pushReplacementNamed(OrdersScreen.routeName);
+                    .pushReplacementNamed(ProductsOverviewScreen.routeName);
               },
             ),
             Divider(),
             ListTile(
-              leading: Icon(Icons.edit, color: Colors.white),
-              title: Text('Manage Products'),
+              leading: Icon(MaterialCommunityIcons.cash_register,
+                  color: Colors.white),
+              title: Text('Касса'),
               onTap: () {
-                Navigator.of(context)
-                    .pushReplacementNamed(UserProductsScreen.routeName);
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => CassaScreen()));
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(MaterialCommunityIcons.garage, color: Colors.white),
+              title: Text('Склад'),
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => WareHouse()));
               },
             ),
             Divider(),
             ListTile(
               leading: Icon(Icons.exit_to_app, color: Colors.white),
-              title: Text('Logout'),
+              title: Text('Выйти'),
               onTap: () {
-                //   Navigator.of(context).pushReplacementNamed('/');
-                Provider.of<Auth>(context, listen: false).logout();
+                logout();
+                Navigator.pushNamed(context, '/');
               },
             ),
           ],

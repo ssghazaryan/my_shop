@@ -1,4 +1,4 @@
-import 'package:MyShop/pages/shops/providers/shops_provider.dart';
+import 'package:MyShop/pages/registr_shops/providers/shops_provider.dart';
 import 'package:MyShop/widgets/get_loader.dart';
 import 'package:MyShop/widgets/text_field.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +10,7 @@ class AddShopScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ShopsProvider>(context);
+    final provider = Provider.of<ShopsRegistrProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Cоздать магазин'),

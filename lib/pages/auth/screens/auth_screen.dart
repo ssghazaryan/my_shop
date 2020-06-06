@@ -4,31 +4,32 @@ import '../providers/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../globals/colors.dart' as col;
+import '../../../globals/globals.dart' as globals;
 
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => AuthProvider(),
+        )
+      ],
+      child: AuthScreenChild(),
+    );
+  }
 }
 
-class _AuthScreenState extends State<AuthScreen> {
-  getData() {
-    Provider.of<Auth>(context, listen: false).tryAutoLogin(context: context);
-  }
-
-  @override
-  void initState() {
-    getData();
-    super.initState();
-  }
-
+class AuthScreenChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    globals.globalContext = context;
     final deviceSize = MediaQuery.of(context).size;
     // final transformConfig = Matrix4.rotationZ(-8 * pi / 180);
     // transformConfig.translate(-10.0);
-    final provider = Provider.of<Auth>(context);
+    final provider = Provider.of<AuthProvider>(context);
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       body: provider.isLoading
@@ -177,7 +178,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             RaisedButton(
                                               child: Text('Вход'),
                                               onPressed: () =>
-                                                  provider.submit(context),
+                                                  provider.submit(),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(30),

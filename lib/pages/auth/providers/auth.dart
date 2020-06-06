@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:MyShop/models/user_model.dart';
-import 'package:MyShop/pages/shops/screens/shops_screen.dart';
+import 'package:MyShop/pages/registr_shops/screens/shops_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../globals/api_keys.dart' as api;
 import '../../../globals/globals.dart' as globals;
 
-class Auth with ChangeNotifier {
+class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String _token;
   DateTime _expiryDate;
@@ -34,51 +34,18 @@ class Auth with ChangeNotifier {
     'password': '',
   };
 
-  Auth() {
+  AuthProvider() {
     setList();
-    if (firstTime) {
-      tryAutoLogin();
-      firstTime = false;
-    }
+    tryAutoLogin();
   }
 
-  Future<void> submit(BuildContext context) async {
+  Future<void> submit() async {
     if (!formKey.currentState.validate()) {
       // Invalid!
       return;
     }
     formKey.currentState.save();
-    setLoading(true);
-    try {
-      // if (_authMode == AuthMode.Login) {
-      // Log user in
-      await login(authData['email'], authData['password'], context);
-      // } else {
-      //   // Sign user up
-      //   await Provider.of<Auth>(context, listen: false).signup(
-      //     _authData['email'],
-      //     _authData['password'],
-      //   );
-      // }
-    } on DioError catch (error) {
-      var errorMessage = 'Authentication failed';
-      if (error.toString().contains('EMAIL_EXISTS')) {
-        errorMessage = 'This email address is already in use.';
-      } else if (error.toString().contains('INVALID_EMAIL')) {
-        errorMessage = 'This is not a valid email address';
-      } else if (error.toString().contains('WEAK_PASSWORD')) {
-        errorMessage = 'This password is too weak.';
-      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
-        errorMessage = 'Could not find a user with that email.';
-      } else if (error.toString().contains('INVALID_PASSWORD')) {
-        errorMessage = 'Invalid password.';
-      }
-      print(errorMessage);
-    } catch (error) {
-      const errorMessage = 'Could not authenticate you. Please try again later';
-      print(errorMessage);
-    }
-    setLoading(false);
+    login(authData['email'], authData['password']);
   }
 
   void setSex(int val) {
@@ -184,8 +151,9 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> _authenticate(
-      String email, String password, String urlSegment, context) async {
+      String email, String password, String urlSegment) async {
     setLoading(true);
+
     try {
       final url =
           "https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=${api.apiKey}";
@@ -222,13 +190,6 @@ class Auth with ChangeNotifier {
         else
           await getUserData();
 
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => ShopsScreen(),
-            ),
-            (Route<dynamic> route) => false);
-
         // WidgetsBinding.instance
         //     .addPostFrameCallback((_) => nameController.dispose());
         // WidgetsBinding.instance
@@ -241,7 +202,9 @@ class Auth with ChangeNotifier {
         //     .addPostFrameCallback((_) => pass2Controller.dispose());
       }
     } on DioError catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      Scaffold.of(
+        globals.globalContext,
+      ).showSnackBar(SnackBar(
         duration: Duration(seconds: 5),
         backgroundColor: Colors.red,
         content: Container(
@@ -256,7 +219,10 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> addUser() async {
-    final url = 'https://my-shop-a763e.firebaseio.com/users.json?auth=$_token';
+    // final url =
+    //     'https://my-shop-a763e.firebaseio.com/userFavorites/$userId/$id.json?auth=$token';
+    final url =
+        'https://my-shop-a763e.firebaseio.com/users/$userId.json?auth=${api.apiDatabase}';
     try {
       var match = {
         'userId': _userId,
@@ -271,6 +237,7 @@ class Auth with ChangeNotifier {
         'sex': _sex.toString()
       };
       globals.user = UserModel(
+        userID: _userId,
         name: nameController.text,
         secondName: secondNameController.text,
         email: emailController.text,
@@ -284,11 +251,17 @@ class Auth with ChangeNotifier {
       print(match);
 
       final response = await Dio().post(url, data: match);
+      Navigator.pushAndRemoveUntil(
+          globals.globalContext,
+          MaterialPageRoute(
+            builder: (BuildContext context) => ShopsRegistrScreen(),
+          ),
+          (Route<dynamic> route) => false);
 
       print(response.data);
       notifyListeners();
     } on DioError catch (error) {
-      print(error.response.data);
+      print('addUser ${error.response.data}');
       throw error;
     }
   }
@@ -300,26 +273,25 @@ class Auth with ChangeNotifier {
   }) async {
     print('signup');
 
-    return _authenticate(email, password, 'signUp', context);
+    return _authenticate(email, password, 'signUp');
   }
 
   Future<void> login(
     String email,
     String password,
-    BuildContext context,
   ) async {
     print('login');
 
-    return _authenticate(email, password, 'signInWithPassword', context);
+    return _authenticate(email, password, 'signInWithPassword');
   }
 
-  Future<bool> tryAutoLogin({BuildContext context}) async {
-    if (context == null) return false;
-    print('tryAutoLogin');
+  Future<void> tryAutoLogin() async {
+    setLoading(true);
 
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
-      return false;
+      setLoading(false);
+      return;
     }
     final extractedUserData = json.decode(prefs.getString('userData'));
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
@@ -332,42 +304,44 @@ class Auth with ChangeNotifier {
     _expiryDate = expiryDate;
 
     if (expiryDate.isBefore(DateTime.now())) {
-      return false;
+      setLoading(false);
+      return;
     }
-    if (context != null)
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => ShopsScreen(),
-          ),
-          (Route<dynamic> route) => false);
 
     _autoLogout();
     notifyListeners();
+    setLoading(false);
+
     return true;
   }
 
   Future<void> getUserData() async {
-    print('getUserData');
     var url =
-        'https://my-shop-a763e.firebaseio.com/users.json?auth=${api.apiDatabase}';
+        'https://my-shop-a763e.firebaseio.com/users/$_userId.json?auth=${api.apiDatabase}';
     try {
       final response = await Dio().get(url);
       final data = response.data as Map<String, dynamic>;
       if (data == null) {
         return;
       }
+      print(data);
+
       data.forEach((key, value) {
-        if (value['userId'] == _userId) {
-          globals.user = UserModel(
-            name: value['name'],
-            date: value['date'],
-            email: value['email'],
-            secondName: value['second_name'],
-            sex: value['sex'],
-          );
-        }
+        globals.user = UserModel(
+          userID: _userId,
+          name: value['name'],
+          date: value['date'],
+          email: value['email'],
+          secondName: value['second_name'],
+          sex: value['sex'],
+        );
       });
+      Navigator.pushAndRemoveUntil(
+          globals.globalContext,
+          MaterialPageRoute(
+            builder: (BuildContext context) => ShopsRegistrScreen(),
+          ),
+          (Route<dynamic> route) => false);
     } on DioError catch (error) {
       print(error.response.data);
     }

@@ -1,20 +1,39 @@
 import 'package:MyShop/pages/auth/providers/auth.dart';
 import 'package:MyShop/pages/auth/widgets/outline_buttons.dart';
 import 'package:MyShop/pages/auth/widgets/outline_sexbuttons.dart';
+import 'package:MyShop/pages/registr_shops/providers/shops_provider.dart';
 import 'package:MyShop/widgets/get_loader.dart';
 import 'package:MyShop/widgets/pager.dart';
 import 'package:MyShop/widgets/text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../globals/colors.dart' as col;
+import '../../../globals/globals.dart' as globals;
 
 class RegitrationScreen extends StatelessWidget {
+  static const routeName = '/auth';
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => AuthProvider(),
+        )
+      ],
+      child: RegitrationScreenChild(),
+    );
+  }
+}
+
+class RegitrationScreenChild extends StatelessWidget {
   static const routeName = '/registration';
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<Auth>(context);
+    globals.globalContext = context;
+
+    final provider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

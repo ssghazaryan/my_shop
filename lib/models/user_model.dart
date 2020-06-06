@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final String date;
   final String sex;
+  final String userID;
 
   UserModel({
     @required this.name,
@@ -13,5 +14,6 @@ class UserModel {
     @required this.email,
     @required this.date,
     @required this.sex,
+    @required this.userID,
   });
 }
