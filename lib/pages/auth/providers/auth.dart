@@ -158,6 +158,7 @@ class AuthProvider with ChangeNotifier {
       final url =
           "https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=${api.apiKey}";
 
+      print(api.apiKey);
       var match = {
         'email': email,
         'password': password,
@@ -202,16 +203,17 @@ class AuthProvider with ChangeNotifier {
         //     .addPostFrameCallback((_) => pass2Controller.dispose());
       }
     } on DioError catch (e) {
-      Scaffold.of(
-        globals.globalContext,
-      ).showSnackBar(SnackBar(
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.red,
-        content: Container(
-          child: Text(e.response.data.toString()),
-        ),
-      ));
+      // Scaffold.of(
+      //   globals.globalContext,
+      // ).showSnackBar(SnackBar(
+      //   duration: Duration(seconds: 5),
+      //   backgroundColor: Colors.red,
+      //   content: Container(
+      //     child: Text(e.response.data.toString()),
+      //   ),
+      // ));
       print('error ${e.error}');
+      print('error ${e.response.data}');
       print(e);
     }
 

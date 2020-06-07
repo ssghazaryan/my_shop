@@ -1,6 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../globals/api_keys.dart' as api;
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore
+import 'package:path/path.dart' as Path;
+import '../../../globals/globals.dart' as globals;
 
 class AddProductProvider with ChangeNotifier {
   bool _isLoading = false;
@@ -10,13 +15,25 @@ class AddProductProvider with ChangeNotifier {
   final controllerProductImageUrl = TextEditingController();
   final controllerProductWeight = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey();
+  String _imagePath = '';
+  File _image;
 
   bool get isLoading {
     return _isLoading;
   }
 
+  String get imagePath {
+    return _imagePath;
+  }
+
   void setPrice(String value) {
     controllerProductPrice.text = value;
+    notifyListeners();
+  }
+
+  void setImagePath(String value, File file) {
+    _imagePath = value;
+    _image = file;
     notifyListeners();
   }
 
@@ -41,14 +58,12 @@ class AddProductProvider with ChangeNotifier {
   }
 
   Future<void> getProduct(String value) async {
-    print(value);
     setLoading(true);
     final url =
         'https://my-shop-a763e.firebaseio.com/products/$value.json?auth=${api.apiDatabase}';
     try {
       final response = await Dio().get(url);
 
-      print(response.data);
       if (response.data != null) {
         Map data = response.data;
         print('Товар найден');
@@ -78,24 +93,61 @@ class AddProductProvider with ChangeNotifier {
 
   Future<void> sendNewProduct() async {
     setLoading(true);
-    final url =
-        'https://my-shop-a763e.firebaseio.com/products/${controllerBarCode.text}.json?auth=${api.apiDatabase}';
-    try {
-      var match = {
-        'barcode': controllerBarCode.text,
-        'name': controllerProductName.text,
-        'image': controllerProductImageUrl.text,
-        'price': controllerProductPrice.text,
-        'weight': controllerProductWeight.text,
-      };
 
-      final response = await Dio().post(url, data: match);
+    if (controllerProductImageUrl.text == '') {
+      String imageurl = await uploadFile();
 
-      print(response.data);
-      notifyListeners();
-    } on DioError catch (error) {
-      print(error.response.data);
-      setLoading(false);
+      final url =
+          'https://my-shop-a763e.firebaseio.com/products/${controllerBarCode.text}.json?auth=${api.apiDatabase}';
+      try {
+        var match = {
+          'barcode': controllerBarCode.text,
+          'name': controllerProductName.text,
+          'image': imageurl,
+          'price': controllerProductPrice.text,
+          'weight': controllerProductWeight.text,
+        };
+        final response = await Dio().post(url, data: match);
+
+        print(response.data);
+        notifyListeners();
+      } on DioError catch (error) {
+        print(error.response.data);
+        setLoading(false);
+      }
+    } else {
+      // final FirebaseDatabase database = FirebaseDatabase.instance;
+
+      // DatabaseReference temp = database.reference().child('shop_products');
+      // print(
+      //   temp.once().then(
+      //         (value) => ((DataSnapshot snapshot) {
+      //           print(
+      //               'Connected to second database and read ${snapshot.value}');
+      //         }),
+      //       ),
+      // );
+
+      // print('Add product to shop');
+      final url =
+          'https://my-shop-a763e.firebaseio.com/shop_products/${globals.shop.shopId}.json?auth=${api.apiDatabase}';
+      try {
+        var match = {
+          'barcode': controllerBarCode.text,
+          'name': controllerProductName.text,
+          'image': controllerProductImageUrl.text,
+          'price': controllerProductPrice.text,
+          'weight': controllerProductWeight.text,
+        };
+        print(match);
+        final response = await Dio().post(url, data: match);
+
+        print(response.data);
+        notifyListeners();
+      } on DioError catch (error) {
+        print(error.response.data);
+        setLoading(false);
+      }
     }
     setLoading(false);
   }
@@ -103,5 +155,22 @@ class AddProductProvider with ChangeNotifier {
   void setBarCode(String string) {
     controllerBarCode.text = string;
     notifyListeners();
+  }
+
+  Future<String> uploadFile() async {
+    String _uploadedFileURL = '';
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('products')
+        .child(Path.basename(_image.path));
+    print(storageReference.path);
+
+    StorageUploadTask uploadTask = storageReference.putFile(_image);
+
+    await uploadTask.onComplete;
+    await storageReference.getDownloadURL().then((fileURL) {
+      _uploadedFileURL = fileURL;
+    });
+    return _uploadedFileURL;
   }
 }

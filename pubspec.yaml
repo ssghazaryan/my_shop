@@ -37,6 +37,12 @@ dependencies:
   toast: ^0.1.5
   flutter_gifimage: ^1.0.1
   flutter_spinkit: "^2.1.0"
+  image_picker: ^0.6.7+1
+  firebase_storage: ^3.0.3
+  firebase_database: ^3.1.6
+   
+
+
 
 
   # flutter_barcode_scanner: ^0.1.7
