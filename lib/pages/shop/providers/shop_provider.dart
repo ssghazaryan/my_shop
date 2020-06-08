@@ -1,4 +1,4 @@
-import 'package:MyShop/widgets/product_item.dart';
+import 'package:MyShop/models/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../globals/globals.dart' as globals;
@@ -16,6 +16,10 @@ class ShopProvider with ChangeNotifier {
     return _isLoading;
   }
 
+  List<ProductItem> get products {
+    return _products;
+  }
+
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -28,7 +32,25 @@ class ShopProvider with ChangeNotifier {
         'https://my-shop-a763e.firebaseio.com/shop_products/${globals.shop.shopId}.json?auth=${api.apiDatabase}';
     try {
       final response = await Dio().get(url);
-      print(response.data);
+
+      if (response.statusCode == 200) {
+        _products.clear();
+        Map data = response.data;
+        if (data != null) {
+          data.forEach((key, value) {
+            _products.add(
+              ProductItem(
+                name: value['name'],
+                count: value['count'],
+                barcode: value['barcode'],
+                image: value['image'],
+                price: value['price'],
+                weight: value['weight'],
+              ),
+            );
+          });
+        }
+      }
     } on DioError catch (error) {
       print(error.response.data);
       setLoading(false);

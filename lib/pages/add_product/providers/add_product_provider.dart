@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../../../globals/api_keys.dart' as api;
 import 'dart:io';
@@ -14,6 +13,7 @@ class AddProductProvider with ChangeNotifier {
   final controllerProductPrice = TextEditingController();
   final controllerProductImageUrl = TextEditingController();
   final controllerProductWeight = TextEditingController();
+  final controllerProductCount = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey();
   String _imagePath = '';
   File _image;
@@ -34,6 +34,11 @@ class AddProductProvider with ChangeNotifier {
   void setImagePath(String value, File file) {
     _imagePath = value;
     _image = file;
+    notifyListeners();
+  }
+
+  void setCount(String value) {
+    controllerProductCount.text = value;
     notifyListeners();
   }
 
@@ -74,6 +79,7 @@ class AddProductProvider with ChangeNotifier {
           controllerProductImageUrl.text = item['image'].toString();
           controllerProductWeight.text = item['weight'].toString();
           controllerProductPrice.text = item['price'].toString();
+          controllerProductCount.text = '';
         }
       } else {
         print('Товар не найден');
@@ -82,6 +88,7 @@ class AddProductProvider with ChangeNotifier {
         controllerProductImageUrl.text = '';
         controllerProductWeight.text = '';
         controllerProductPrice.text = '';
+        controllerProductCount.text = '';
       }
       notifyListeners();
     } on DioError catch (error) {
@@ -106,40 +113,8 @@ class AddProductProvider with ChangeNotifier {
           'image': imageurl,
           'price': controllerProductPrice.text,
           'weight': controllerProductWeight.text,
+          'count': controllerProductCount.text
         };
-        final response = await Dio().post(url, data: match);
-
-        print(response.data);
-        notifyListeners();
-      } on DioError catch (error) {
-        print(error.response.data);
-        setLoading(false);
-      }
-    } else {
-      // final FirebaseDatabase database = FirebaseDatabase.instance;
-
-      // DatabaseReference temp = database.reference().child('shop_products');
-      // print(
-      //   temp.once().then(
-      //         (value) => ((DataSnapshot snapshot) {
-      //           print(
-      //               'Connected to second database and read ${snapshot.value}');
-      //         }),
-      //       ),
-      // );
-
-      // print('Add product to shop');
-      final url =
-          'https://my-shop-a763e.firebaseio.com/shop_products/${globals.shop.shopId}.json?auth=${api.apiDatabase}';
-      try {
-        var match = {
-          'barcode': controllerBarCode.text,
-          'name': controllerProductName.text,
-          'image': controllerProductImageUrl.text,
-          'price': controllerProductPrice.text,
-          'weight': controllerProductWeight.text,
-        };
-        print(match);
         final response = await Dio().post(url, data: match);
 
         print(response.data);
@@ -149,6 +124,26 @@ class AddProductProvider with ChangeNotifier {
         setLoading(false);
       }
     }
+    final url =
+        'https://my-shop-a763e.firebaseio.com/shop_products/${globals.shop.shopId}.json?auth=${api.apiDatabase}';
+    try {
+      var match = {
+        'barcode': controllerBarCode.text,
+        'name': controllerProductName.text,
+        'image': controllerProductImageUrl.text,
+        'price': controllerProductPrice.text,
+        'weight': controllerProductWeight.text,
+        'count': controllerProductCount.text
+      };
+      print('asd');
+      final response = await Dio().post(url, data: match);
+      print(response.statusCode);
+      notifyListeners();
+    } on DioError catch (error) {
+      print(error.response.data);
+      setLoading(false);
+    }
+
     setLoading(false);
   }
 

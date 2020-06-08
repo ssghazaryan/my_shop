@@ -283,9 +283,9 @@ class AddProductScreenChild extends StatelessWidget {
                                 height: 8,
                               ),
                               TextFieldOutline(
-                                //  controller: provider.controllerProductImageUrl,
+                                 controller: provider.controllerProductCount,
                                 onChange: (value) {
-                                  // provider.setImage(value);
+                                   provider.setCount(value);
                                 },
                                 hint: 'Количество',
                                 function: (value) {
